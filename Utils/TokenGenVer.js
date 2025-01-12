@@ -6,7 +6,7 @@ const generateToken = (id) => {
             throw new Error('JWT_SECRET is not defined in .env file')
         }
         return jwt.sign({id}, process.env.JWT_SECRET, {
-            expiresIn: '12h'
+            expiresIn: '7d'
         })
 
     }catch(error){

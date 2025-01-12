@@ -1,0 +1,7 @@
+.env
+/node_modules
+
+
+password: gK4saUEDdKQFpCYo
+userName: MohammadTariqueHasanAbdi1998and1996Ghazala
+mongodb+srv://MohammadTariqueHasanAbdi1998and1996Ghazala:gK4saUEDdKQFpCYo@blogappcluster.etnjx.mongodb.net/?retryWrites=true&w=majority&appName=BlogAppCluster

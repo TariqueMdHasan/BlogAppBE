@@ -95,6 +95,94 @@ const loginUser = async (req, res) => {
 
 
 
+const deleteUser = async(req, res) => {
+    // find id 
+    // got id ?
+    // find id and delete
 
 
-module.exports = { registerUser, loginUser }
+
+    try{
+        const user = await User.findById(req.user._id)
+        if(!user){
+            return res.status(400).json({message: 'You are not authorized to delete this account'})
+        }
+        await User.findByIdAndDelete(user)
+        return res.status(200).json({message: 'User deleted successfully'})
+    }catch(error){
+        console.error('Error during user deletion', error)
+        return res.status(500).jason({message: 'Eroor during user deletion'})
+    }
+}
+
+
+
+
+const updateUser = async(req, res) => {
+    // take email, name, userName, profile picture, password from body
+    // return if email or userNmae and password not found
+    // find id by fidn oNe method
+    // return if user id not found 
+    // change everything by if method
+    // update and save
+    // return json
+
+    const { name, userName, email, password } = req.body
+
+    if((!userName && !email) || !password){
+        return res.status(400).json({message: 'Please enter email/userName and password'})
+    }
+
+    try{
+        const user = await User.findById(req.user._id);
+        if(!user){
+            return res.status(400).json({message: 'You are not authorised to update this user'})
+        }
+
+        if(userName) user.userName = userName;
+        if(email) user.email = email;
+        if(password) user.password = password;
+        if(name) user.name = name;
+
+        const updatedUser = await user.save();
+        return res.status(200).json({
+            message: 'user updated successfully',
+            user: {
+                _id: updatedUser._id,
+                userName: updatedUser.userName,
+                name: updatedUser.name,
+                email: updatedUser.email
+            }
+        })
+
+    }catch(error){
+        console.log('error in server', error.message)
+        return res.status(500).json({message: 'server Error'})
+    }
+}
+
+
+const getUserData = async (req, res) => {
+    try{
+        const user = await User.findById(req.user._id)
+        if(!user){
+            return res.status(404).json({message: 'User not found'})
+        }
+        return res.status(200).json({
+            message: 'User Data retrieved successfully',
+            user: {
+                _id: user._id,
+                userName: user.userName,
+                name: user.name,
+                email: user.email
+            }
+        })
+    }catch(error){
+        console.error('Error finding user data', error)
+        res.stutus(500).json({message: 'error while getting user data'})
+    }
+}
+
+
+
+module.exports = { registerUser, loginUser, deleteUser, updateUser, getUserData }

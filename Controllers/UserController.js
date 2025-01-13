@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
     }
     const userNameExist = await User.findOne({userName})
     if(userNameExist){
-        return res.status(400).json({message: 'userNme is taken'})
+        return res.status(400).json({message: 'userName is taken'})
     }
 
     try{
@@ -51,25 +51,29 @@ const loginUser = async (req, res) => {
 
 
 
-    const { email, userName, password } = req.body;
+    const { email, password, userName } = req.body;
 
-    if((!email && !userName) || !password){
+    if((!email &  !userName)  || !password){
         return res.status(400).json({message: 'please enter all the details'})
     }
 
     try{
-        // const user = await User.findOne({email, userName})
-
+        // const user = await User.findOne({email})
         let user;
         if(email){
             user = await User.findOne({email})
         }else if(userName){
-            user = await User.findONe({userName})
+            user = await User.findOne({userName})
         }
 
-        if(!user || !(await bcrypt.compare(password, user.password))){
-            return res.status(400).json({message: 'Invalid credentials'})
+        if(!user){
+            return res.status(400).json({message: 'Invalid user email'})
         }
+        const userPassword =  await bcrypt.compare(password, user.password)
+        if(!userPassword){
+            return res.status(400).json({message: "invalid password"})
+        }
+
         const token = generateToken(user._id)
         return res.status(200).json({
             message: 'User logged in successfully',

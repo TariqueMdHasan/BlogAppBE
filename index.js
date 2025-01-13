@@ -12,6 +12,10 @@ const bodyparser = require('body-parser')
 const app = express();
 dotenv.config();
 
+// mongoose.connect(process.env.MONGO_URL)
+// .then('mongodb connected')
+// .catch('mongodb not connected')
+
 app.use(express.json())
 connectDB();
 app.use(cors())
@@ -19,6 +23,8 @@ app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({extended: true}))
 
 const PORT = process.env.PORT || 8000;
+
+// console.log(process.env.MONGO_URL)
 
 
 // Routes

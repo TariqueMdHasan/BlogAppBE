@@ -185,4 +185,35 @@ const getUserData = async (req, res) => {
 
 
 
-module.exports = { registerUser, loginUser, deleteUser, updateUser, getUserData }
+
+// Get user profile
+const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Upload profile picture
+const uploadProfilePicture = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        user.profilePicture = `uploads/${req.file.filename}`;
+        await user.save();
+
+        res.json({ message: 'Profile picture updated successfully', profilePicture: user.profilePicture });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
+module.exports = { uploadProfilePicture, getUserProfile, registerUser, loginUser, deleteUser, updateUser, getUserData }

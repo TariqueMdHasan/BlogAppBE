@@ -5,6 +5,7 @@ const dotenv = require('dotenv')
 const userRoutes = require('./Routes/UserRoutes.js')
 const cors = require('cors')
 const bodyparser = require('body-parser')
+const blogRoutes = require('./Routes/blogRoutes.js')
 
 
 
@@ -32,6 +33,7 @@ const PORT = process.env.PORT || 8000;
 
 // Routes
 app.use('/api/auth', userRoutes)
+app.use('/api/blog', blogRoutes)
 
 app.get('/', (req, res) => {
     return res.send('Hello blog backend')

@@ -4,19 +4,29 @@ const blogSchema = mongoose.Schema(
     {
         title: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
         content: {
             type: String,
             required: true
         },
-        photo: {
-            type: String
+        image: {
+            type: String,
+            defalut: 'Uploads/pf.jpg',
         },
         author: {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User',
             required: true
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        },
+        updateAt: {
+            type: Date,
+            default: Date.now
         }
     }
 )

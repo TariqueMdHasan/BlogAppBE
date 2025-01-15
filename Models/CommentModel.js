@@ -4,7 +4,8 @@ const commentSchema = mongoose.Schema(
     {
         text: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
         blog: {
             type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +17,8 @@ const commentSchema = mongoose.Schema(
             ref: 'User',
             required: true
         }
+    },{
+        timestamps: true
     }
 )
 

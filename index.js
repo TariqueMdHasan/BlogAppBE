@@ -6,6 +6,7 @@ const userRoutes = require('./Routes/UserRoutes.js')
 const cors = require('cors')
 const bodyparser = require('body-parser')
 const blogRoutes = require('./Routes/blogRoutes.js')
+const commentRoutes = require('./Routes/CommenRoute.js')
 
 
 
@@ -27,6 +28,8 @@ app.use('/uploads', express.static('uploads'));
 const PORT = process.env.PORT || 8000;
 
 // console.log(process.env.MONGO_URL)
+// connectDB.comments.findbyId({ _id: ObjectId("67869e3e4f631cc619741b5a") })
+
 
 
 
@@ -34,6 +37,7 @@ const PORT = process.env.PORT || 8000;
 // Routes
 app.use('/api/auth', userRoutes)
 app.use('/api/blog', blogRoutes)
+app.use('/api/comment', commentRoutes)
 
 app.get('/', (req, res) => {
     return res.send('Hello blog backend')

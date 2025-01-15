@@ -208,38 +208,78 @@ const getUserProfile = async (req, res) => {
 };
 
 // Upload profile picture
+// const uploadProfilePicture = async (req, res) => {
+//     try {
+//         const user = await User.findById(req.user.id);
+//         if (!user) return res.status(404).json({ error: 'User not found' });
+
+
+//         const result = await cloudinary.uploader.upload_stream(
+//             {
+//                 folder: 'profilePicture',
+//                 resource_type: 'image'
+//             },
+//             (error, result) => {
+//                 if(error){
+//                     console.error('Error uploading to Cloudinary', error)
+//                     return res.status(500).json({error: 'Failed to upload image'})
+//                 }
+//                 return result;
+//             }
+//         ).end(req.file.buffer)
+
+
+
+
+
+//         user.profilePicture = result.secure_url;
+//         await user.save();
+
+//         res.json({ message: 'Profile picture updated successfully', profilePicture: user.profilePicture });
+//     } catch (error) {
+//         console.error('Error in cntrlr', error)
+//         res.status(500).json({message: 'something wring in cntrr', error: error.message });
+//     }
+// };
+
+
 const uploadProfilePicture = async (req, res) => {
     try {
+        // Check if the user exists
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
+        // Ensure a file is uploaded
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
 
-        const result = await cloudinary.uploader.upload_stream(
-            {
-                folder: 'profilePicture',
-                resource_type: 'image'
-            },
-            (error, result) => {
-                if(error){
-                    console.error('Error uploading to Cloudinary', error)
-                    return res.status(500).json({error: 'Failed to upload image'})
+        // Upload image to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: 'profile_pictures',
+                    resource_type: 'image',
+                },
+                (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
                 }
-                return result;
-            }
-        ).end(req.file.buffer)
+            );
+            uploadStream.end(req.file.buffer);
+        });
 
-
-
-
-
+        // Update user profile picture URL
         user.profilePicture = result.secure_url;
         await user.save();
 
         res.json({ message: 'Profile picture updated successfully', profilePicture: user.profilePicture });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error in uploadProfilePicture:', error);
+        res.status(500).json({ error: 'Failed to upload profile picture', details: error.message });
     }
 };
+
 
 
 

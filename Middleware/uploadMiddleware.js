@@ -1,8 +1,8 @@
-const multer = require('multer');
+// const multer = require('multer');
 // const path = require('path');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// const { CloudinaryStorage } = require('multer-storage-cloudinary');
 // const storage = multer.memoryStorage();
-const cloudinary = require('cloudinary').v2;
+// const cloudinary = require('cloudinary').v2;
 
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
@@ -13,12 +13,12 @@ const cloudinary = require('cloudinary').v2;
 //     },
 // });
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+// cloudinary.config({
+//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//     api_key: process.env.CLOUDINARY_API_KEY,
+//     api_secret: process.env.CLOUDINARY_API_SECRET,
 
-})
+// })
 
 // const upload = multer({
 //     storage,
@@ -36,14 +36,65 @@ cloudinary.config({
 // });
 
 
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'blogs',
-        allowedFormats: ['jpg', 'jpeg', 'png']
-    }
-})
+// const storage = new CloudinaryStorage({
+//     cloudinary: cloudinary,
+//     params: {
+//         folder: 'blogs',
+//         allowedFormats: ['jpg', 'jpeg', 'png']
+//     }
+// })
 
-const upload = multer({storage})
+// const upload = multer({storage})
 
-module.exports = upload;
+// module.exports = upload;
+
+
+
+
+
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Function to create Cloudinary storage dynamically
+const createCloudinaryStorage = (folder) =>
+    new CloudinaryStorage({
+        cloudinary,
+        params: {
+            folder, // Dynamic folder name
+            allowedFormats: ['jpg', 'jpeg', 'png'], // Allowed file formats
+        },
+    });
+
+// Middleware factory for different types of uploads
+const uploadMiddleware = (folder) => {
+    const storage = createCloudinaryStorage(folder);
+
+    return multer({
+        storage,
+        limits: {
+            fileSize: 5 * 1024 * 1024, // Limit file size to 5MB
+        },
+        fileFilter: (req, file, cb) => {
+            const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (allowedMimeTypes.includes(file.mimetype)) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only .jpg, .jpeg, and .png files are allowed!'), false);
+            }
+        },
+    });
+};
+
+// Create separate middlewares for profile pictures and blog images
+const profilePictureUpload = uploadMiddleware('profile_pictures'); // Folder: 'profile_pictures'
+const blogImageUpload = uploadMiddleware('blogs'); // Folder: 'blogs'
+
+module.exports = { profilePictureUpload, blogImageUpload };

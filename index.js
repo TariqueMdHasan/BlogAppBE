@@ -14,9 +14,6 @@ const commentRoutes = require('./Routes/CommenRoute.js')
 const app = express();
 dotenv.config();
 
-// mongoose.connect(process.env.MONGO_URL)
-// .then('mongodb connected')
-// .catch('mongodb not connected')
 
 app.use(express.json())
 connectDB();
@@ -26,9 +23,6 @@ app.use(bodyparser.urlencoded({extended: true}))
 app.use('/uploads', express.static('uploads'));
 
 const PORT = process.env.PORT || 8000;
-
-// console.log(process.env.MONGO_URL)
-// connectDB.comments.findbyId({ _id: ObjectId("67869e3e4f631cc619741b5a") })
 
 
 

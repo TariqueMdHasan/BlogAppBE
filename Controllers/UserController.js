@@ -1,6 +1,15 @@
 const User = require('../Models/UserModel.js')
 const {generateToken} = require('../Utils/TokenGenVer.js')
 const bcrypt = require('bcrypt')
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+
+})
+
 
 const registerUser = async (req, res) => {
     // taking userdata from req body
@@ -204,7 +213,26 @@ const uploadProfilePicture = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        user.profilePicture = `uploads/${req.file.filename}`;
+
+        const result = await cloudinary.uploader.upload_stream(
+            {
+                folder: 'profilePicture',
+                resource_type: 'image'
+            },
+            (error, result) => {
+                if(error){
+                    console.error('Error uploading to Cloudinary', error)
+                    return res.status(500).json({error: 'Failed to upload image'})
+                }
+                return result;
+            }
+        ).end(req.file.buffer)
+
+
+
+
+
+        user.profilePicture = result.secure_url;
         await user.save();
 
         res.json({ message: 'Profile picture updated successfully', profilePicture: user.profilePicture });

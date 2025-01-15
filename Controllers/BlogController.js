@@ -20,11 +20,14 @@ const createBlog = async(req, res) => {
         const {title, content} = req.body;
         const userId = req.user.id;
 
+        // Cloudinary file path from req.file
+        const imageUrl = req.file? req.file.path: undefined;
+
         const newBlog = new Blog({
             title,
             content,
             author: userId,
-            image: req.file? `uploads/${req.file.filename}`: undefined,
+            image: imageUrl
         })
 
         const savedBlog = await newBlog.save();
@@ -99,8 +102,8 @@ const updateBlog = async(req, res) => {
         blog.title = title || blog.title;
         blog.content = content || blog.conntent;
         blog.updateBlog = Date.now();
-        if (req.fiel){
-            blog.image= `uploads/${req.file.filename}`
+        if (req.file){
+            blog.image= req.file.path;
         }
 
         const updatedBlog = await blog.save();
